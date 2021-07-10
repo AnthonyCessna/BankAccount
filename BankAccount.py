@@ -53,6 +53,7 @@ class BankAccount:
 
         BankAccount.account_numbers.append(self)
 
+
 # creates a sqlLite data base to store card numbers and pins for future access.
 conn = sqlite3.connect("cards.sqlite")
 cur = conn.cursor()
@@ -103,6 +104,7 @@ while menu_selection != 0:
         cur.execute("SELECT number, pin, balance FROM card WHERE number = ?;", (account_number,))
 
         sql_account = cur.fetchone()
+        conn.commit()
 
         if sql_account is not None:
             print("Enter your PIN:")
@@ -112,17 +114,6 @@ while menu_selection != 0:
                 print("You have successfully logged in!")
                 successful_login = True
 
-        #for account in BankAccount.account_numbers:
-
-            #if account.credit_card_number == account_number:
-                #print("Enter your PIN:")
-                #pin_number = input()
-
-                #if account.pin == pin_number:
-                    #print("You have successfully logged in!")
-                    #successful_login = True
-                    #loggedin_account = account
-
         if not successful_login:
             print("Wrong card number or PIN!")
 
@@ -130,19 +121,30 @@ while menu_selection != 0:
             loggedin = True
 
             while loggedin:
-                print("1. Balance")
+                print("1. Check Balance")
                 print("2. Log out")
-                print("0. Exit")
+                print("3. Update Balance")
+                print("0. Exit")     
 
                 account_login_selection = int(input())
 
                 if account_login_selection == 1:
-                    print("Balance: {0}".format(sql_account[2]))
+                    print("Your balance is:")
+                    print(sql_account[2])
 
                 elif account_login_selection == 2:
                     print("You have successfully logged out!")
                     loggedin_account = None
                     loggedin = False
+
+                elif account_login_selection == 3:
+                    print("Enter new account balance: ")
+                    account_balance = int(input())
+
+                    cur.execute("UPDATE card SET balance = ? WHERE number = ?;", (account_balance, sql_account[0]))
+                    cur.execute("SELECT number, pin, balance FROM card WHERE number = ?;", (account_number,))
+                    sql_account = cur.fetchone()
+                    conn.commit()
 
                 elif account_login_selection == 0:
                     menu_selection = 0
