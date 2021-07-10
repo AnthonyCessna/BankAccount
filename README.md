@@ -1,0 +1,1 @@
+This project creates a program that allows a user to generate a credit card number that is valid by industry standards and passes the Luhn algorithm. The users information is stored in a SQLlite data base allowing the user to log in and change their balance in the account.
